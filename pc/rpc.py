@@ -31,7 +31,7 @@ def update():
 
     title = data.get('title', '')
     episode = data.get('episode', '')
-    cover = data.get('cover', '')
+    cover = data.get('cover', '') or None
     current_time = data.get('current_time', '0:00')
     duration = data.get('duration', '0:00')
     paused = data.get('paused', False)
