@@ -1,0 +1,4 @@
+pypresence
+flask
+requests
+python-dotenv
