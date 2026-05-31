@@ -1,6 +1,7 @@
 # ========== Imports ==========
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 import os
 import requests
@@ -12,6 +13,7 @@ PC_URL = f"http://{PC_IP}:5001"
 
 # ========== Flask app ==========
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/watching', methods=['POST'])
 def watching():
