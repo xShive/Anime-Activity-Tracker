@@ -30,7 +30,8 @@ def update():
     data = request.get_json()
 
     title = data.get('title', '')
-    episode = data.get('episode', '')
+    episode = data.get('episode', '').replace('.', '').strip()
+    episode_line = f"EP {episode}" if episode else ""
     cover = data.get('cover', '') or None
     current_time = data.get('current_time', '0:00')
     duration = data.get('duration', '0:00')
@@ -39,7 +40,7 @@ def update():
     if paused:
         rpc.update(
             details=title,
-            state=f"⏸ {episode}",
+            state=f"⏸ Paused",
             large_image=cover,
             large_text=title,
         )
