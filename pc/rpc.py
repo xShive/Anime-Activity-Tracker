@@ -38,29 +38,25 @@ def update():
     paused = data.get('paused', False)
 
     if paused:
+        rpc.clear()
+        time.sleep(0.5)
         rpc.update(
             details=title,
-            state=f"⏸ Paused",
+            state="⏸ Paused",
             large_image=cover,
-            large_text=title,
         )
     else:
-        current_seconds = time_to_seconds(current_time)
-        duration_seconds = time_to_seconds(duration)
-        seconds_remaining = duration_seconds - current_seconds
-        # discord expects a Unix timestamp, so we need to calculate the remaining duration, get the current point in time, and add those two
-        # counts down automatically
+        seconds_remaining = time_to_seconds(duration) - time_to_seconds(current_time)
         end_timestamp = int(time.time()) + seconds_remaining
 
         rpc.update(
             details=title,
-            state=episode,
+            state=episode_line,
             large_image=cover,
-            large_text=title,
             end=end_timestamp
         )
 
-    print(f"Updated: {title} - {episode} - paused={paused}")
+    print(f"Updated: {title} - {episode_line} - paused={paused}")
     return jsonify({ "status": "ok" })
 
 @app.route('/clear', methods=['POST'])
