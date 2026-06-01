@@ -67,3 +67,20 @@ Want to track shows, anime or movies on a website that isn't supported yet? You 
 **Tips for finding selectors:**
 - ```ctrl + shift + c``` allows you to click any element on the website, and it'll give you the corresponding code.
 - Test your selectors using  ```document.querySelector('your-selector-here')``` to ensure they return the correct elements.
+
+
+## FAQ
+### Q: Why does Windows display a "This PC is protected" or Firewall warning?
+A: This is a standard Windows security feature for any custom application that has not been digitally signed by a paid developer certificate. Because this is an open-source project managed locally, Windows does not recognize the publisher. You can safely click "More info" and then "Run anyway" to proceed.
+
+### Q: How do I ensure this tool is safe to use?
+A: The source code of this project is publicly available, which you can use to verify its safety. The tracker runs entirely locally on your machine and only interacts with website data to scrape data It does not log anything other related to your browser.
+
+### Q: Why doesn't the status appear on my Discord profile?
+A: If your activity is not showing, please follow these steps to troubleshoot:
+- Ensure the **Discord Desktop app** is fully running. The tracker will not sync if you are using the browser-based version of Discord.
+- Open your browser's extension page and ensure the **extension is enabled** and that you have "Developer Mode" toggled on
+- Open your browser's **console** while on the website to see if there are any **error messages** related to the extension failing to load or scrape data. Each request being sent should get printed in the console.
+- If you are using a site not officially supported, ensure your CSS selectors in ```extension/config.js``` are correct by testing them in the browser console using ```document.querySelector('your-selector-here')```
+
+
