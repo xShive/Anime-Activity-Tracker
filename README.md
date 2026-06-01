@@ -12,8 +12,10 @@ Automatically streams whatever anime you're watching directly onto your Discord 
 
 <div align="center">
   <a href="https://imgur.com/ry3eCfV">
-    <img src="assets/demo-thumbnail.png" alt="Watch Video">
+    <img src="assets/demo-thumbnail.png" alt="Watch Video" width="500">
   </a>
+  <br>
+  <p><b>↑ Click to view demo ↑</b></p>
 </div>
 
 
