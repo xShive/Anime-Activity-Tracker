@@ -10,9 +10,11 @@
 Automatically streams whatever anime you're watching directly onto your Discord profile as a Rick Presence Card (RPC), complete with a time-remaining tracker, paused states, anime-title detection and episode-title detection.
 </p>
 
-<p align="center">
-  <video src="assets/demo.mp4" width="480" height="270" controls></video>
-</p>
+<div align="center">
+  <a href="https://imgur.com/ry3eCfV">
+    <img src="assets/demo-thumbnail.png" alt="Watch Video">
+  </a>
+</div>
 
 
 ## Requirements
