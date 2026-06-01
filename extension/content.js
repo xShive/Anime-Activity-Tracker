@@ -1,33 +1,39 @@
+// ========== Find website ==========
+const currentHost = window.location.hostname.replace("www.", "")
+const SITE = SITE_CONFIGS[currentHost]
+if (!SITE) {
+    console.log("No config found for", currentHost)
+}
+
 // ========== State ==========
 let isWatching = false;
 
 // ========== Functions ==========
 function scrapeData() {
-    if (!window.location.href.includes("/watch")) return null;
+    if (!SITE) return null;
+    if (!window.location.href.includes(SITE.watchPathIncludes)) return null;
 
-    let animeTitleElement = document.querySelector(".anime-title");
-    let titleElement = document.querySelector(".ep-title");
-    let numberElement = document.querySelector(".ep-number");
-    let timestampElements = document.getElementsByClassName("vds-time"); 
-    let imageElement = document.querySelector("img[style*='view-transition-name: poster']");
-    let videoElement = document.querySelector("video");
+    const s = SITE.selectors;
+    
+    const animeTitleEl = document.querySelector(s.animeTitle);
+    const titleEl = document.querySelector(s.episodeTitle);
+    const numberEl = document.querySelector(s.episodeNum);
+    const timestamps = document.getElementsByClassName(s.timestamps.replace(".", ""));
+    const coverEl = document.querySelector(s.cover);
+    const videoEl = document.querySelector(s.video);
 
-    if (!titleElement || !timestampElements || timestampElements.length < 2 || !imageElement || !videoElement) {
+    if (!titleEl || !timestamps || timestamps.length < 2 || !coverEl || !videoEl) {
         return null;
     }
 
-    let raw_title = titleElement.textContent.includes("· ") 
-        ? titleElement.textContent.split("· ")[1].trim() 
-        : titleElement.textContent.trim();
-    
     return {
-        anime_title: animeTitleElement ? animeTitleElement.textContent.trim() : "",
-        episode_title: raw_title,
-        episode: numberElement ? numberElement.textContent.trim() : "",
-        current_time: timestampElements[0].textContent,
-        duration: timestampElements[1].textContent,
-        cover: imageElement ? imageElement.src : "",
-        paused: videoElement.paused
+        anime_title: animeTitleEl ? animeTitleEl.textContent.trim() : "",
+        episode_title: SITE.parseEpisodeTitle(titleEl.textContent),
+        episode: numberEl ? numberEl.textContent.trim() : "",
+        current_time: timestamps[0].textContent,
+        duration: timestamps[1].textContent,
+        cover: coverEl.src || "",
+        paused: videoEl.paused,
     };
 }
 
