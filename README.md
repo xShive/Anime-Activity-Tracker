@@ -11,7 +11,13 @@ Automatically streams whatever anime you're watching directly onto your Discord 
 </p>
 
 <p align="center">
-  <video src="assets/demo.mp4" width="480" height="270" controls></video>
+  <a href="https://github.com/xShive/Anime-Activity-Tracker/releases/download/v1.0.0/demo.AAT.mp4">
+    <img src="assets/demo-thumbnail.png" width="700" alt="Anime Activity Tracker Demo">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/xShive/Anime-Activity-Tracker/releases/download/v1.0.0/demo.AAT.mp4">Watch Demo Video</a>
 </p>
 
 
