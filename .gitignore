@@ -1,2 +1,7 @@
 .vscode/
 .env
+build/
+dist/
+Output/
+*.spec
+installer.iss

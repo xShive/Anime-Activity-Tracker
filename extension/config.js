@@ -19,4 +19,18 @@ const SITE_CONFIGS = {
             return raw.includes("· ") ? raw.split("· ")[1].trim() : raw.trim();
         }
     },
+    "miruro.bz": {
+        watchPathIncludes: "/watch",
+        selectors: {
+            animeTitle:   ".anime-title",
+            episodeTitle: ".ep-title",
+            episodeNum:   ".ep-number",
+            timestamps:   ".vds-time",
+            cover:        "img[style*='view-transition-name: poster']",
+            video:        "video",
+        },
+        parseEpisodeTitle: (raw) => {
+            return raw.includes("· ") ? raw.split("· ")[1].trim() : raw.trim();
+        }
+    },
 };

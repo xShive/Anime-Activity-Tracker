@@ -1,21 +1,34 @@
 {
     "manifest_version": 3,
     "name": "Anime Activity Tracker",
-    "version": "1.0",
+    "version": "1.2.0",
     "description": "Shows what anime you're watching on Discord",
 
     "icons": {
         "128": "icon.png"
     },
 
+    "permissions": [
+        "tabs"
+    ],
+
     "host_permissions": [
         "https://www.miruro.tv/*",
+        "https://www.miruro.bz/*",
         "http://127.0.0.1:5001/*"
     ],
 
+    "background": {
+        "service_worker": "background.js"
+    },
+
+    "action": {
+        "default_icon": "icon.png"
+    },
+
     "content_scripts": [
     {
-        "matches": ["https://www.miruro.tv/*"],
+        "matches": ["https://www.miruro.tv/*", "https://www.miruro.bz/*"],
         "js": ["config.js", "content.js"]
     }
     ]

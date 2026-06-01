@@ -37,22 +37,27 @@ function scrapeData() {
     };
 }
 
-async function sendData(data) {
-    try {
-        await fetch(`${LOCAL_URL}/watching`, {
-            method: "POST",
+// Relay through background worker to avoid local network popup
+function bgFetch(url, method, body = null) {
+    return new Promise((resolve) => {       // { } means making an object
+        chrome.runtime.sendMessage({
+            type: "fetch",
+            url,
+            method,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-        console.log("Sent:", data);
-    } catch (error) {
-        console.log("Failed to send:", error)
-    }
+            body,
+        }, resolve);
+    });
 }
 
+async function sendData(data) {
+    await bgFetch(`${LOCAL_URL}/watching`, "POST", data);
+    console.log("Sent:", data);
+}
 
 function sendStop() {
-    fetch(`${LOCAL_URL}/stopped`, { method: "POST" });
+    bgFetch(`${LOCAL_URL}/stopped`, "POST");
+    console.log("Stopped");
 }
 
 // ========== Main Loop ==========
