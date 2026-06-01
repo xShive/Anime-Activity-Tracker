@@ -3,7 +3,7 @@
 <p align="center">
   <img src="https://img.shields.io/github/license/xShive/Anime-Activity-Tracker?style=flat-square" alt="License">
   <img src="https://img.shields.io/github/v/release/xShive/Anime-Activity-Tracker?style=flat-square" alt="Version">
-  <img src="https://img.shields.io/github/downloads/YxShive/Anime-Activity-Tracker/total?style=flat-square" alt="Downloads">
+  <img src="https://img.shields.io/github/downloads/xShive/Anime-Activity-Tracker/total?style=flat-square" alt="Downloads">
 </p>
 
 Automatically streams whatever anime you're watching directly onto your Discord profile as a Rick Presence Card (RPC), complete with a time-remaining tracker, paused states, anime-title detecion and episode-title detection.
