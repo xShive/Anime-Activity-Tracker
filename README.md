@@ -2,7 +2,6 @@
 
 Automatically streams whatever anime you're watching directly onto your Discord profile as a Rick Presence Card (RPC), complete with a time-remaining tracker, paused states, anime-title detecion and episode-title detection.
 
----
 
 ## Requirements
 
@@ -11,14 +10,12 @@ Before installing, make sure you have the following installed on your machine:
 * **Discord Desktop App** (The tracker will not sync if you only use Discord in a web browser)
 * A Chromium-based web browser (**Google Chrome**, **Microsoft Edge**, **Brave**, **Opera**, etc.)
 
----
 
 ## Installation & Setup
 
 ### Part 1: Running the Python Server
 ### Part 2: Loading the Browser Extension
 
----
 
 ## How It Works
 
