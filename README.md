@@ -6,8 +6,15 @@
   <img src="https://img.shields.io/github/downloads/xShive/Anime-Activity-Tracker/total?style=flat-square" alt="Downloads">
 </p>
 
-Automatically streams whatever anime you're watching directly onto your Discord profile as a Rick Presence Card (RPC), complete with a time-remaining tracker, paused states, anime-title detection and episode-title detection.
 
+Automatically streams whatever anime you're watching directly onto your Discord profile as a Rick Presence Card (RPC), complete with a time-remaining tracker, paused states, anime-title detection and episode-title detection.
+</p>
+
+<p align="center">
+  <video width="800" autoplay loop muted playsinline>
+    <source src="assets/demo AAT.mp4" type="video/mp4">
+  </video>
+</p>
 
 ## Requirements
 
