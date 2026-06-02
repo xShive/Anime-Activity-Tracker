@@ -16,12 +16,6 @@ Automatically streams whatever anime you're watching directly onto your Discord 
   <p><b>↑ Click to view demo ↑</b></p>
 </div>
 
-## Requirements
-
-Before installing, make sure you have the following installed on your machine:
-* **Python 3.8+** 
-* **Discord Desktop App** (The tracker will not sync if you only use Discord in a web browser)
-* A Chromium-based web browser (**Google Chrome**, **Microsoft Edge**, **Brave**, **Opera**, etc.)
 
 ## Installation & Setup
 
