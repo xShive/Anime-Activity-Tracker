@@ -77,6 +77,22 @@ function getCoverUrl(el) {
     return el.getAttribute("src") || getMetaCover();
 }
 
+// Helper: normalize timestamp strings and ignore slash-only separators.
+function parseTimestampNodes(nodes) {
+    const values = Array.from(nodes)
+        .map((el) => el.textContent.trim())
+        .filter(Boolean);
+
+    const timeStrings = values.filter((value) => /\d{1,2}:\d{2}/.test(value));
+    const currentTime = timeStrings[0] || values[0] || "";
+    const duration =
+        timeStrings[1] ||
+        values.find((value, index) => index > 0 && value !== "/") ||
+        "";
+
+    return {currentTime, duration};
+}
+
 // ========== Functions ==========
 // scrapeData(): Attempts to read page data. It's resilient: it uses fallback selectors,
 // returns partial data when the player is blocked, and prefers meta tags for cover art.
@@ -122,8 +138,7 @@ function scrapeData() {
     }
 
     // Extract time/duration if available; otherwise return empty strings.
-    const currentTime = timestamps.length > 0 ? timestamps[0].textContent.trim() : "";
-    const duration = timestamps.length > 1 ? timestamps[1].textContent.trim() : "";
+    const {currentTime, duration} = parseTimestampNodes(timestamps);
     const isPaused = videoEl ? videoEl.paused : true;
 
     if (timestamps.length < 2) {
