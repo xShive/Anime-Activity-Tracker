@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Anime Activity Tracker",
-    "version": "1.2.0",
+    "version": "1.2.2",
     "description": "Shows what anime you're watching on Discord",
 
     "icons": {
@@ -15,6 +15,8 @@
     "host_permissions": [
         "https://www.miruro.tv/*",
         "https://www.miruro.bz/*",
+        "https://www.crunchyroll.com/*",
+        "https://crunchyroll.com/*",
         "http://127.0.0.1:5001/*"
     ],
 
@@ -28,7 +30,7 @@
 
     "content_scripts": [
     {
-        "matches": ["https://www.miruro.tv/*", "https://www.miruro.bz/*"],
+        "matches": ["https://www.miruro.tv/*", "https://www.miruro.bz/*", "https://www.crunchyroll.com/*", "https://crunchyroll.com/*"],
         "js": ["config.js", "content.js"]
     }
     ]

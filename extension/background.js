@@ -1,7 +1,9 @@
 // ========== Icon greying ==========
+// The extension enables/disables the action icon depending on which host a tab is on.
 const SUPPORTED_HOSTS = [
     "miruro.tv",
     "miruro.bz",
+    "crunchyroll.com",
 ];
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
