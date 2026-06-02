@@ -52,8 +52,11 @@ const SITE_CONFIGS = {
         },
         parseEpisodeNumber: (raw) => {
             if (!raw) return "";
-            const match = raw.match(/^\s*E\s*\d+\b/i) || raw.match(/^(?:Episode|Ep)\s*\d+\b/i);
-            return match ? match[0].trim() : "";
+            const normalized = raw.trim();
+            const match = normalized.match(/^(?:E|Ep(?:isode)?)[\s:]*([0-9]+)/i)
+                || normalized.match(/^(?:Episode|Ep)[\s:]*([0-9]+)/i)
+                || normalized.match(/^([0-9]+)/);
+            return match ? match[1].trim() : "";
         },
     },
 };
