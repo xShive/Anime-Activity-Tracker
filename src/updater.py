@@ -20,7 +20,10 @@ def check_for_updates():
             if latest_version != CURRENT_VERSION:
                 download_url = data.get("html_url")     # html_url is the link for humans
 
-                if data.get("assets")
+                if data.get("assets"):
+                    for asset in data["assets"]:
+                        if asset["name"].endswith(".exe"):
+                            download_url = asset[""]
 
 
     except Exception as e:
