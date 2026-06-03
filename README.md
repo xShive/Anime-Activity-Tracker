@@ -1,9 +1,9 @@
-# Anime Activity Tracker for Discord
+# AniPresence
 
 <p align="center">
-  <img src="https://img.shields.io/github/license/xShive/Anime-Activity-Tracker?style=flat-square" alt="License">
-  <img src="https://img.shields.io/github/v/release/xShive/Anime-Activity-Tracker?style=flat-square" alt="Version">
-  <img src="https://img.shields.io/github/downloads/xShive/Anime-Activity-Tracker/total?style=flat-square" alt="Downloads">
+  <img src="https://img.shields.io/github/license/xShive/AniPrescense?style=flat-square" alt="License">
+  <img src="https://img.shields.io/github/v/release/xShive/AniPrescense?style=flat-square" alt="Version">
+  <img src="https://img.shields.io/github/downloads/xShive/AniPrescense/total?style=flat-square" alt="Downloads">
 </p>
 
 Automatically streams whatever anime you're watching directly onto your Discord profile as a Rich Presence Card (RPC), complete with a time-remaining tracker, paused states, anime-title detection, and episode-title detection.
@@ -16,17 +16,11 @@ Automatically streams whatever anime you're watching directly onto your Discord 
   <p><b>↑ Click to view demo ↑</b></p>
 </div>
 
-## Requirements
-
-Before installing, make sure you have the following installed on your machine:
-* **Python 3.8+** 
-* **Discord Desktop App** (The tracker will not sync if you only use Discord in a web browser)
-* A Chromium-based web browser (**Google Chrome**, **Microsoft Edge**, **Brave**, **Opera**, etc.)
 
 ## Installation & Setup
 
 ### Part 1: Install the Tracker
-1. Download the latest `AnimeTracker_Setup.exe` from the [Releases Page](https://github.com/xShive/Anime-Activity-Tracker/releases).
+1. Download the latest `AnimeTracker_Setup.exe` from the [Releases Page](https://github.com/xShive/AniPresence/releases).
 2. Run the installer and follow the on-screen instructions.
 3. Once the installation finishes, an **installation folder** will automatically open on your screen. Keep this window open.
   
