@@ -2,6 +2,7 @@
 from pypresence.presence import Presence
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from tray import create_tray
 
 import os
 import time
@@ -106,5 +107,4 @@ if __name__ == '__main__':
     
     print("RPC client running on port 5001...")
     
-    while True:
-        time.sleep(15)
+    create_tray()

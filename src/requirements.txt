@@ -2,3 +2,5 @@ pypresence
 flask
 requests
 flask-cors
+pystray
+pillow
