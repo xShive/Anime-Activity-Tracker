@@ -4,7 +4,6 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from tray import create_tray
 
-import os
 import time
 import threading
 
@@ -19,9 +18,10 @@ print("Successfully connected to Discord's RPC")
 # ========== Heartbeat Timeout Logic ==========
 last_ping_time = time.time()
 is_presence_active = False
+is_paused_active = False
 
 def timeout_monitor():
-    global last_ping_time, is_presence_active
+    global last_ping_time, is_presence_active, is_paused_active
     while True:
         time.sleep(5)
         
@@ -38,9 +38,9 @@ def timeout_monitor():
 threading.Thread(target=timeout_monitor, daemon=True).start()
 
 # ========== Helper ==========
-def time_to_seconds(t):
+def time_to_seconds(t: str) -> int:
     parts = t.split(':')
-    return int(parts[0]) * 60 + int(parts[1])
+    return int(parts[0]) * 60 + int(parts[1]) if (len(parts) == 2) else int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
 
 # ========== Flask app ==========
 app = Flask(__name__)
@@ -48,7 +48,7 @@ CORS(app)
 
 @app.route('/watching', methods=['POST'])
 def watching():
-    global last_ping_time, is_presence_active
+    global last_ping_time, is_presence_active, is_paused_active
     last_ping_time = time.time() # reset timer
     is_presence_active = True
 
@@ -67,13 +67,18 @@ def watching():
 
     try:
         if paused:
-            rpc.clear()
+            if not is_paused_active:
+                is_paused_active = True
+                rpc.clear()
+
             rpc.update(
                 details=anime_title_and_number,
                 state="⏸ Paused",
                 large_image=cover,
             )
         else:
+            is_paused_active = False
+
             seconds_remaining = time_to_seconds(duration) - time_to_seconds(current_time)
             end_timestamp = int(time.time()) + seconds_remaining
 
