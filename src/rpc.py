@@ -3,6 +3,7 @@ from pypresence.presence import Presence
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from tray import create_tray
+from mal import get_mal_url
 
 import time
 import threading
@@ -71,10 +72,12 @@ def watching():
                 is_paused_active = True
                 rpc.clear()
 
+            mal_url = get_mal_url(anime_title)
             rpc.update(
                 details=anime_title_and_number,
                 state="⏸ Paused",
                 large_image=cover,
+                buttons=[{"label": "View on MAL", "url": mal_url}]
             )
         else:
             is_paused_active = False
@@ -82,11 +85,14 @@ def watching():
             seconds_remaining = time_to_seconds(duration) - time_to_seconds(current_time)
             end_timestamp = int(time.time()) + seconds_remaining
 
+            mal_url = get_mal_url(anime_title)
+            print(mal_url)
             rpc.update(
                 details=anime_title_and_number,
                 state=episode_title,
                 large_image=cover,
-                end=end_timestamp
+                end=end_timestamp,
+                buttons=[{"label": "View on MAL", "url": mal_url}]
             )
         print(f"Updated: {episode_title} - {episode_line} - paused={paused}")
     except:
