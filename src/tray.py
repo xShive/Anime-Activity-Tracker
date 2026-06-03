@@ -1,5 +1,6 @@
 import pystray
 from PIL import Image
+from updater import check_for_updates
 
 def create_tray():
     image = Image.open("assets/icon.ico")
