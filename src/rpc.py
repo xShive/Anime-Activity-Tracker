@@ -8,20 +8,19 @@ from mal import get_mal_url
 import time
 import threading
 
-# ========== APP ID ==========
+# ========== Global Variables ==========
 APP_ID="1510673753871352070"
 
-# ========== Connect RPC ==========
-rpc = Presence(APP_ID)
-rpc.connect()
-print("Successfully connected to Discord's RPC")
-
-# ========== Heartbeat Timeout Logic ==========
 last_ping_time = time.time()
 is_presence_active = False
 is_paused_active = False
 
+# ========== Heartbeat Timeout Logic =========
 def timeout_monitor():
+    """
+    Every 15 seconds content.js sends a /watching ping. last_ping_time records the time of the last ping.
+    The timeout_monitor thread wakes up every 5 seconds to check if it has been more than 25 seconds.
+    """
     global last_ping_time, is_presence_active, is_paused_active
     while True:
         time.sleep(5)
@@ -31,19 +30,17 @@ def timeout_monitor():
             print("Browser tab closed! Clearing Discord presence.")
             try:
                 rpc.clear()
-            except:
-                pass
-            is_presence_active = False
+            except Exception as e:
+                print(f"ERROR: {e}")
 
-# Start the timer in the background
-threading.Thread(target=timeout_monitor, daemon=True).start()
+            is_presence_active = False
 
 # ========== Helper ==========
 def time_to_seconds(t: str) -> int:
     parts = t.split(':')
     return int(parts[0]) * 60 + int(parts[1]) if (len(parts) == 2) else int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
 
-# ========== Flask app ==========
+# ========== Flask app - API endpoints ==========
 app = Flask(__name__)
 CORS(app) 
 
@@ -111,11 +108,20 @@ def stopped():
     print("Presence cleared")
     return jsonify({ "status": "ok" })
 
+
+# ========== Main ==========
 if __name__ == '__main__':
-    flask_thread = threading.Thread(target=lambda: app.run(host='127.0.0.1', port=5001)) 
-    flask_thread.daemon = True      
-    flask_thread.start()
-    
+    # Connect RPC
+    rpc = Presence(APP_ID)
+    rpc.connect()
+    print("Successfully connected to Discord's RPC")
+
+    # thread 1: flask server listens for HTTP requests on port 5001 (daemon) (daemon threads die when main thread exits)
+    threading.Thread(target=lambda: app.run(host='127.0.0.1', port=5001), daemon=True).start() 
     print("RPC client running on port 5001...")
+
+    # thread 2: check heartbeat every 5 seconds (daemon)
+    threading.Thread(target=timeout_monitor, daemon=True).start()
     
+    # main thread: blocks running tray icon
     create_tray()

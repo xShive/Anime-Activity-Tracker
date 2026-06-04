@@ -1,10 +1,11 @@
+# ========== Imports ==========
 import pystray
 import webbrowser
 import threading
 from PIL import Image
 from updater import check_for_updates, CURRENT_VERSION
 
-
+# ========== Update Checker Task ==========
 def background_check(icon):
     latest_version, download_url = check_for_updates()
     if latest_version and download_url:

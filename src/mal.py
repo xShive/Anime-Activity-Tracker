@@ -1,3 +1,4 @@
+# ========== Imports ==========
 import requests
 
 # Store MAL links to prevent spamming the API lol
@@ -38,4 +39,3 @@ def get_mal_url(title: str) -> str:
     fallback_url = f"https://myanimelist.net/anime.php?q={title}"
     mal_url_cache[title] = fallback_url
     return fallback_url
-
