@@ -16,6 +16,7 @@
         "https://www.miruro.tv/*",
         "https://www.miruro.bz/*",
         "https://www.miruro.to/*",
+        "https://www.miruro.ru/*",
         "https://www.crunchyroll.com/*",
         "https://crunchyroll.com/*",
         "http://127.0.0.1:5001/*"
@@ -31,7 +32,7 @@
 
     "content_scripts": [
     {
-        "matches": ["https://www.miruro.tv/*", "https://www.miruro.bz/*", "https://www.miruro.to/*", "https://www.crunchyroll.com/*", "https://crunchyroll.com/*"],
+        "matches": ["https://www.miruro.tv/*", "https://www.miruro.bz/*", "https://www.miruro.to/*", "https://www.miruro.ru/*", "https://www.crunchyroll.com/*", "https://crunchyroll.com/*"],
         "js": ["config.js", "content.js"]
     }
     ]
