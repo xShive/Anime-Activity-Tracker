@@ -15,6 +15,8 @@ last_ping_time = time.time()
 is_presence_active = False
 is_paused_active = False
 rpc_connected = False
+current_end_timestamp = None
+last_episode = None
 
 # ========== Heartbeat Timeout Logic =========
 def timeout_monitor():
@@ -51,6 +53,8 @@ CORS(app)
 @app.route('/watching', methods=['POST'])
 def watching():
     global last_ping_time, is_presence_active, is_paused_active, rpc_connected, rpc
+    global current_end_timestamp, last_episode
+
     last_ping_time = time.time() # reset timer
     is_presence_active = True
 
@@ -59,6 +63,7 @@ def watching():
             rpc = Presence(APP_ID)
             rpc.connect()
             rpc_connected = True
+            current_end_timestamp = None
             print("Successfully reconnected.")
             
         except Exception as e:
@@ -75,37 +80,58 @@ def watching():
     duration = data.get('duration', '0:00')
     paused = data.get('paused', False)
 
-    anime_title_and_number = f"{anime_title} - {episode_line}"
+    anime_title_and_number = f"{anime_title} ∙ {episode_line}"
+    
+    episode_changed = (episode_line != last_episode)
+    last_episode = episode_line
 
     try:
-        if paused:
+        seconds_remaining = time_to_seconds(duration) - time_to_seconds(current_time)
+        mal_url = get_mal_url(anime_title)
+
+        # Is the video finished?
+        if seconds_remaining <= 0 and duration != "0:00":
+            if current_end_timestamp is not None:
+                current_end_timestamp = None
+                rpc.clear()     # erase countdown, only first time when 0 remaining
+
+            rpc.update(
+                details=anime_title_and_number,
+                state="✓ Finished!",
+                large_image=cover,
+                buttons=[{"label": "View on MAL", "url": mal_url}]
+            )
+
+        # Is it paused?
+        elif paused:
             if not is_paused_active:
                 is_paused_active = True
+                current_end_timestamp = None
                 rpc.clear()
 
-            mal_url = get_mal_url(anime_title)
             rpc.update(
                 details=anime_title_and_number,
                 state="⏸ Paused",
                 large_image=cover,
                 buttons=[{"label": "View on MAL", "url": mal_url}]
             )
+
+        # 3. It is playing normally
         else:
             is_paused_active = False
+            new_end_timestamp = int(time.time()) + seconds_remaining
 
-            seconds_remaining = time_to_seconds(duration) - time_to_seconds(current_time)
-            end_timestamp = int(time.time()) + seconds_remaining
+            
+            if current_end_timestamp is None or episode_changed or abs(current_end_timestamp - new_end_timestamp) > 3:
+                current_end_timestamp = new_end_timestamp
 
-            mal_url = get_mal_url(anime_title)
-            print(mal_url)
             rpc.update(
                 details=anime_title_and_number,
                 state=episode_title,
                 large_image=cover,
-                end=end_timestamp,
+                end=current_end_timestamp,
                 buttons=[{"label": "View on MAL", "url": mal_url}]
             )
-        print(f"Updated: {episode_title} - {episode_line} - paused={paused}")
 
     except Exception as e:
         rpc_connected = False
@@ -115,12 +141,14 @@ def watching():
 
 @app.route('/stopped', methods=['POST'])
 def stopped():
-    global is_presence_active
+    global is_presence_active, current_end_timestamp, last_episode
     try:
         rpc.clear()
     except:
         pass
     is_presence_active = False
+    current_end_timestamp = None
+    last_episode = None
     print("Presence cleared")
     return jsonify({ "status": "ok" })
 
@@ -138,7 +166,7 @@ if __name__ == '__main__':
         print(f"Initial Discord connection failed: {e}. Will retry on next browser update.")
         rpc_connected = False
 
-    # thread 1: flask server listens for HTTP requests on port 5001 (daemon) (daemon threads die when main thread exits)
+    # thread 1: flask server listens for HTTP requests on port 5001 (daemon)
     threading.Thread(target=lambda: app.run(host='127.0.0.1', port=5001), daemon=True).start() 
     print("RPC client running on port 5001...")
 
