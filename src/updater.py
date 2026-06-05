@@ -3,7 +3,7 @@ import requests
 from typing import Optional, Tuple
 
 # ========== Global variables ==========
-CURRENT_VERSION = "v1.3.0"
+CURRENT_VERSION = "v1.3.1"
 
 # ========== Functions ==========
 # https://docs.github.com/en/rest/releases/releases?apiVersion=2026-03-10
