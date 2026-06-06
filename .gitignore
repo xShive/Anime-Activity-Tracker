@@ -5,3 +5,4 @@ dist/
 Output/
 *.spec
 installer.iss
+src/__pycache__/

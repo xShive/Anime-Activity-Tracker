@@ -1,5 +1,20 @@
 const LOCAL_URL = "http://127.0.0.1:5001";
 
+// ========== Miruro Configs ==========
+const MIRURO_CONFIG = {
+    watchPathIncludes: "/watch",
+    selectors: {
+        animeTitle:   ".anime-title",
+        episodeTitle: ".ep-title",
+        episodeNum:   ".ep-number",
+        cover:        "img[style*='view-transition-name: poster']",
+        video:        "video",
+    },
+    parseEpisodeTitle: (raw) => {
+        return raw.includes("· ") ? raw.split("· ")[1].trim() : raw.trim();
+    }
+};
+
 
 // ========== Site Configs ==========
 // Each entry should have:
@@ -8,59 +23,10 @@ const LOCAL_URL = "http://127.0.0.1:5001";
 // - parseEpisodeTitle: function to normalise an episode title string
 // - parseEpisodeNumber: (optional) function to extract an episode number when available
 const SITE_CONFIGS = {
-    "miruro.tv": {
-        watchPathIncludes: "/watch",    // to check if youre still watching
-        selectors: {
-            animeTitle:   ".anime-title",
-            episodeTitle: ".ep-title",
-            episodeNum:   ".ep-number",
-            cover:        "img[style*='view-transition-name: poster']",
-            video:        "video",
-        },
-        parseEpisodeTitle: (raw) => {
-            return raw.includes("· ") ? raw.split("· ")[1].trim() : raw.trim();
-        }
-    },
-    "miruro.bz": {
-        watchPathIncludes: "/watch",
-        selectors: {
-            animeTitle:   ".anime-title",
-            episodeTitle: ".ep-title",
-            episodeNum:   ".ep-number",
-            cover:        "img[style*='view-transition-name: poster']",
-            video:        "video",
-        },
-        parseEpisodeTitle: (raw) => {
-            return raw.includes("· ") ? raw.split("· ")[1].trim() : raw.trim();
-        }
-    },
-    "miruro.to": {
-        watchPathIncludes: "/watch",
-        selectors: {
-            animeTitle:   ".anime-title",
-            episodeTitle: ".ep-title",
-            episodeNum:   ".ep-number",
-            cover:        "img[style*='view-transition-name: poster']",
-            video:        "video",
-        },
-        parseEpisodeTitle: (raw) => {
-            return raw.includes("· ") ? raw.split("· ")[1].trim() : raw.trim();
-        }
-    },
-    "miruro.ru": {
-        watchPathIncludes: "/watch",
-        selectors: {
-            animeTitle:   ".anime-title",
-            episodeTitle: ".ep-title",
-            episodeNum:   ".ep-number",
-            cover:        "img[style*='view-transition-name: poster']",
-            video:        "video",
-        },
-        parseEpisodeTitle: (raw) => {
-            return raw.includes("· ") ? raw.split("· ")[1].trim() : raw.trim();
-        }
-    },
-
+    "miruro.tv":  MIRURO_CONFIG,
+    "miruro.bz":  MIRURO_CONFIG,
+    "miruro.to":  MIRURO_CONFIG,
+    "miruro.ru":  MIRURO_CONFIG,
     "crunchyroll.com": {
         watchPathIncludes: ["/watch", "/episode-"],
         selectors: {
