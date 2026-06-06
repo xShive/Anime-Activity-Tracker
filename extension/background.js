@@ -4,6 +4,8 @@ const SUPPORTED_HOSTS = [
     "miruro.tv",
     "miruro.bz",
     "crunchyroll.com",
+    "miruro.to",
+    "miruro.bz"
 ];
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {

@@ -86,7 +86,12 @@ def watching():
     last_episode = episode_line
 
     try:
-        seconds_remaining = time_to_seconds(duration) - time_to_seconds(current_time)
+        # if video player is blocked (crunchyroll not subscribed)
+        if not current_time or not duration:
+            seconds_remaining = 0
+        else:
+            seconds_remaining = time_to_seconds(duration) - time_to_seconds(current_time)
+
         mal_url = get_mal_url(anime_title)
 
         # Is the video finished?

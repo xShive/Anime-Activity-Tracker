@@ -1,60 +1,27 @@
-// ========== Find website ==========
+// ========== Setup ==========
+// check if current website is in config
 const currentHost = window.location.hostname.replace("www.", "");
 const SITE = SITE_CONFIGS[currentHost];
-
-console.log("DETECTED HOST:", currentHost);
-console.log("SITE CONFIG FOUND:", SITE);
-if (!SITE) {
-    console.log("No config found for", currentHost);
-}
 
 // ========== State ==========
 let isWatching = false;
 
-// Helper: match current URL against either a string or array of path fragments.
+// ========== URL Helpers ==========
+// check if current URL is still on the /watch
 function pathMatches(pathIncludes) {
     if (!pathIncludes) return false;
-    if (Array.isArray(pathIncludes)) {
+    if (Array.isArray(pathIncludes)) {      // crunchy has two paths (array)
         return pathIncludes.some((p) => window.location.href.includes(p));
     }
     return window.location.href.includes(pathIncludes);
 }
 
-// Helper: try a selector or array of selectors and return the first match.
-function queryOne(selectors) {
-    if (!selectors) return null;
-    if (Array.isArray(selectors)) {
-        for (const selector of selectors) {
-            try {
-                const el = document.querySelector(selector);
-                if (el) return el;
-            } catch (e) {
-                // Ignore invalid selectors and continue to next
-            }
-        }
-        return null;
-    }
-    return document.querySelector(selectors);
-}
 
-// Helper: try multiple selector alternatives and return the first non-empty NodeList.
-function queryAll(selectors) {
-    if (!selectors) return [];
-    if (Array.isArray(selectors)) {
-        for (const selector of selectors) {
-            try {
-                const nodes = document.querySelectorAll(selector);
-                if (nodes && nodes.length) return nodes;
-            } catch (e) {
-                // Skip invalid selectors
-            }
-        }
-        return [];
-    }
-    return document.querySelectorAll(selectors) || [];
-}
+// ========== Cover Image Helpers ==========
 
-// Helper: prefer `og:image` meta if no explicit poster element is present.
+// Fallback: reads the cover image from the page's hidden meta tags.
+// Sites add these tags for social media previews (e.g. the image Discord shows when you share a link).
+// We use this when no visible cover element is found on the page.
 function getMetaCover() {
     const meta =
         document.querySelector("meta[property='og:image']") ||
@@ -63,7 +30,12 @@ function getMetaCover() {
     return meta ? meta.content || meta.getAttribute("content") || "" : "";
 }
 
-// Helper: extract a usable cover image URL from different possible element shapes.
+// Extracts a usable image URL from a cover element.
+// The cover element can be different types depending on the site:
+//   - An <img> tag         → just read its src
+//   - A <div> with CSS     → extract the URL from its background-image style
+//   - Something nested     → look for an <img> inside it
+// Falls back to getMetaCover() if nothing works.
 function getCoverUrl(el) {
     if (!el) return getMetaCover();
     if (el.tagName === "IMG") return el.src || getMetaCover();
@@ -77,91 +49,34 @@ function getCoverUrl(el) {
     return el.getAttribute("src") || getMetaCover();
 }
 
-// Helper: normalize timestamp strings and ignore slash-only separators.
-function parseTimestampNodes(nodes) {
-    const values = Array.from(nodes)
-        .map((el) => el.textContent.trim())
-        .filter(Boolean);
-
-    const timeStrings = values.filter((value) => /\d{1,2}:\d{2}/.test(value));
-    const currentTime = timeStrings[0] || values[0] || "";
-    const duration =
-        timeStrings[1] ||
-        values.find((value, index) => index > 0 && value !== "/") ||
-        "";
-
-    return {currentTime, duration};
-}
-
-// ========== Functions ==========
-// scrapeData(): Attempts to read page data. It's resilient: it uses fallback selectors,
-// returns partial data when the player is blocked, and prefers meta tags for cover art.
+// ========== Scraper ==========
 function scrapeData() {
-    console.log("scrapeData called", {
-        href: window.location.href,
-        readyState: document.readyState,
-        watchPathIncludes: SITE?.watchPathIncludes,
-        pathMatches: SITE ? pathMatches(SITE.watchPathIncludes) : false,
-    });
-
+    // not a supported site, or not on a watch page
     if (!SITE) return null;
     if (!pathMatches(SITE.watchPathIncludes)) return null;
 
     const s = SITE.selectors;
-    console.log("SELECTORS:", s);
 
-    // Attempt to find elements using the configured selectors (with fallbacks).
-    const animeTitleEl = queryOne(s.animeTitle);
-    const titleEl = queryOne(s.episodeTitle);
-    const numberEl = queryOne(s.episodeNum);
-    const timestamps = queryAll(s.timestamps);
-    const coverEl = queryOne(s.cover);
-    const videoEl = queryOne(s.video);
+    // find the elements on the page using the selectors defined in config.js
+    const animeTitleEl = document.querySelector(s.animeTitle);
+    const titleEl = document.querySelector(s.episodeTitle);
+    const numberEl = document.querySelector(s.episodeNum);
+    const coverEl = document.querySelector(s.cover);
+    const videoEl = document.querySelector(s.video);
 
-    console.log("DEBUG VALUES:", {
-        animeTitleEl,
-        titleEl,
-        timestampsLength: timestamps?.length,
-        coverEl,
-        videoEl,
-    });
-
-    // If there's no episode title yet, wait and retry on the next tick.
-    if (!titleEl) {
-        console.log("No episode title found yet; waiting for page render.", {
-            titleEl,
-            timestampsLength: timestamps?.length,
-            coverEl,
-            videoEl,
-        });
-        return null;
-    }
-
-    // Extract time/duration if available; otherwise return empty strings.
-    const {currentTime, duration} = parseTimestampNodes(timestamps);
+    // read timestamps from video element
+    const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+    const currentTime = (videoEl && videoEl.currentTime != null) ? fmt(videoEl.currentTime) : "";
+    const duration = (videoEl && videoEl.duration) ? fmt(videoEl.duration) : "";
     const isPaused = videoEl ? videoEl.paused : true;
 
-    if (timestamps.length < 2) {
-        // Player may be blocked for anonymous users; still provide partial payload.
-        console.log("Player not available or blocked; returning partial watch data.", {
-            currentTime,
-            duration,
-            isPaused,
-            cover: getCoverUrl(coverEl),
-        });
-    }
-
-    // Prefer an explicit episode number element; fall back to the title text when missing.
+    // if number element exists, use it. else, full title and extract number from it in the return parseEpisodeNumber
     const rawEpisodeValue = numberEl ? numberEl.textContent : titleEl.textContent;
-
+    
     return {
         anime_title: animeTitleEl ? animeTitleEl.textContent.trim() : "",
         episode_title: SITE.parseEpisodeTitle(titleEl.textContent),
-        episode: SITE.parseEpisodeNumber
-            ? SITE.parseEpisodeNumber(rawEpisodeValue)
-            : rawEpisodeValue
-            ? rawEpisodeValue.trim()
-            : "",
+        episode: SITE.parseEpisodeNumber ? SITE.parseEpisodeNumber(rawEpisodeValue) : rawEpisodeValue ? rawEpisodeValue.trim() : "",     // in 'else' another if-else: number element not working
         current_time: currentTime,
         duration: duration,
         cover: getCoverUrl(coverEl),
@@ -169,9 +84,11 @@ function scrapeData() {
     };
 }
 
-// Relay through background worker to avoid local network popup
+// ========== Communication with Python ==========
+// sends a request through background.js (instead of directly from here)
+// direct requests to localhost would trigger a browser security popup, so we route through the background worker
 function bgFetch(url, method, body = null) {
-    return new Promise((resolve) => {       // { } means making an object
+    return new Promise((resolve) => {
         chrome.runtime.sendMessage({
             type: "fetch",
             url,
@@ -182,24 +99,22 @@ function bgFetch(url, method, body = null) {
     });
 }
 
+// sends the current watch data to the Python app
 async function sendData(data) {
     await bgFetch(`${LOCAL_URL}/watching`, "POST", data);
-    console.log("Sent:", data);
 }
 
+// tells the Python app to clear the Discord presence
 function sendStop() {
     bgFetch(`${LOCAL_URL}/stopped`, "POST");
-    console.log("Stopped");
 }
 
 // ========== Main Loop ==========
+// scrapes the page every 15 seconds and sends the data to Python
+// if data disappears (e.g. navigated away), sends a stop signal
 function startScraping() {
-    console.log("Starting scraper for", currentHost, "readyState=", document.readyState, "href=", window.location.href);
-
     const tick = async () => {
-        console.log("interval tick");
         let data = scrapeData();
-        console.log("scrapeData result:", data);
 
         if (data) {
             await sendData(data);
@@ -214,6 +129,7 @@ function startScraping() {
     setInterval(tick, 15000);
 }
 
+// wait for the page to finish loading before starting the scraper
 function waitForPageReady(callback) {
     if (document.readyState === "complete" || document.readyState === "interactive") {
         callback();

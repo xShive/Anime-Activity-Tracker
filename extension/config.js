@@ -14,7 +14,6 @@ const SITE_CONFIGS = {
             animeTitle:   ".anime-title",
             episodeTitle: ".ep-title",
             episodeNum:   ".ep-number",
-            timestamps:   ".vds-time",       // expects [0]=current, [1]=duration
             cover:        "img[style*='view-transition-name: poster']",
             video:        "video",
         },
@@ -28,7 +27,6 @@ const SITE_CONFIGS = {
             animeTitle:   ".anime-title",
             episodeTitle: ".ep-title",
             episodeNum:   ".ep-number",
-            timestamps:   ".vds-time",
             cover:        "img[style*='view-transition-name: poster']",
             video:        "video",
         },
@@ -42,7 +40,6 @@ const SITE_CONFIGS = {
             animeTitle:   ".anime-title",
             episodeTitle: ".ep-title",
             episodeNum:   ".ep-number",
-            timestamps:   ".vds-time",
             cover:        "img[style*='view-transition-name: poster']",
             video:        "video",
         },
@@ -56,7 +53,6 @@ const SITE_CONFIGS = {
             animeTitle:   ".anime-title",
             episodeTitle: ".ep-title",
             episodeNum:   ".ep-number",
-            timestamps:   ".vds-time",
             cover:        "img[style*='view-transition-name: poster']",
             video:        "video",
         },
@@ -68,22 +64,18 @@ const SITE_CONFIGS = {
     "crunchyroll.com": {
         watchPathIncludes: ["/watch", "/episode-"],
         selectors: {
-            animeTitle: ["[data-t='show-title-link'] h4", "[data-testid='series-title']", "a[data-testid='show-title-link'] h4"],
-            episodeTitle: ["h1.title", "[data-testid='episode-title']", "h1[data-testid='episode-title']"],
-            episodeNum: ["h1.title", "[data-testid='episode-number']", "span[data-testid='episode-number']"],
-            timestamps: ["[data-testid='timestamp'] span", ".player-timestamps span", ".time-display span"],
-            cover: [".bitmovinplayer-poster", "[data-testid='player-poster']", ".player-poster img", ".progressive-image-base__fade--Nrn20"],
-            video: ["video", ".vjs-tech"],
+            animeTitle:   "[data-t='show-title-link'] h4",
+            episodeTitle: "h1.title",
+            episodeNum:   "h1.title",
+            cover:        ".bitmovinplayer-poster",
+            video:        "video",
         },
         parseEpisodeTitle: (raw) => {
             return raw.includes(" - ") ? raw.split(" - ")[1].trim() : raw.trim();
         },
         parseEpisodeNumber: (raw) => {
             if (!raw) return "";
-            const normalized = raw.trim();
-            const match = normalized.match(/^(?:E|Ep(?:isode)?)[\s:]*([0-9]+)/i)
-                || normalized.match(/^(?:Episode|Ep)[\s:]*([0-9]+)/i)
-                || normalized.match(/^([0-9]+)/);
+            const match = raw.trim().match(/^(?:E|Ep(?:isode)?)[\s:]*([0-9]+)/i) || raw.trim().match(/^([0-9]+)/);
             return match ? match[1].trim() : "";
         },
     },
