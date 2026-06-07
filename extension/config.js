@@ -45,4 +45,20 @@ const SITE_CONFIGS = {
             return match ? match[1].trim() : "";
         },
     },
+    "animepahe.pw": {
+        watchPathIncludes: ["/play"],
+        selectors: {
+            animeTitle:   "h1 a",
+            episodeTitle: null,
+            episodeNum:   "#episodeMenu",
+            cover:        ".anime-poster",
+            video:        "video",      // <iframe src="https://kwik.cx/e/9H5TAmSoQXG5"></iframe> loads kwik.xc injecting the .js
+        },
+        parseEpisodeNumber: (raw) => {
+            if (!raw) return "";
+            const match = raw.trim().match(/^(?:E|Ep(?:isode)?)[\s:]*([0-9]+)/i) || raw.trim().match(/^([0-9]+)/);
+            return match ? match[1].trim() : "";
+        },
+        parseCoverUrl: (url) => url.replace(".th.jpg", ".jpg"),
+    },
 };

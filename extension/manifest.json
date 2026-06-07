@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "AniPresence",
-    "version": "1.3.2",
+    "version": "1.3.3",
     "description": "Share your anime / manga activity on Discord!",
 
     "icons": {
@@ -19,6 +19,8 @@
         "https://www.miruro.ru/*",
         "https://www.crunchyroll.com/*",
         "https://crunchyroll.com/*",
+        "https://animepahe.pw/*",
+        "https://kwik.cx/*",
         "http://127.0.0.1:5001/*"
     ],
 
@@ -31,9 +33,14 @@
     },
 
     "content_scripts": [
-    {
-        "matches": ["https://www.miruro.tv/*", "https://www.miruro.bz/*", "https://www.miruro.to/*", "https://www.miruro.ru/*", "https://www.crunchyroll.com/*", "https://crunchyroll.com/*"],
-        "js": ["config.js", "content.js"]
-    }
+        {
+            "matches": ["https://www.miruro.tv/*", "https://www.miruro.bz/*", "https://www.miruro.to/*", "https://www.miruro.ru/*", "https://www.crunchyroll.com/*", "https://crunchyroll.com/*", "https://animepahe.pw/*"],
+            "js": ["config.js", "content.js"]
+        },
+        {
+            "matches": ["https://kwik.cx/*"],
+            "js": ["kwik.js"],
+            "all_frames": true
+        }
     ]
 }

@@ -5,6 +5,12 @@ const SITE = SITE_CONFIGS[currentHost];
 
 // ========== State ==========
 let isWatching = false;
+let kwikVideoData = null;
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.type === "video_data") {
+        kwikVideoData = message;
+    }
+});
 
 // ========== URL Helpers ==========
 // check if current URL is still on the /watch
@@ -66,20 +72,30 @@ function scrapeData() {
 
     // read timestamps from video element
     const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
-    const currentTime = (videoEl && videoEl.currentTime != null) ? fmt(videoEl.currentTime) : "";
-    const duration = (videoEl && videoEl.duration) ? fmt(videoEl.duration) : "";
-    const isPaused = videoEl ? videoEl.paused : true;
-
+    let currentTime, duration, isPaused;
+    if (videoEl) {
+        currentTime = videoEl.currentTime != null ? fmt(videoEl.currentTime) : "";
+        duration = videoEl.duration ? fmt(videoEl.duration) : "";
+        isPaused = videoEl.paused;
+    } else if (kwikVideoData) {
+        currentTime = kwikVideoData.currentTime;
+        duration = kwikVideoData.duration;
+        isPaused = kwikVideoData.paused;
+    } else {
+        currentTime = "";
+        duration = "";
+        isPaused = true;
+    }
     // if number element exists, use it. else, full title and extract number from it in the return parseEpisodeNumber
     const rawEpisodeValue = numberEl ? numberEl.textContent : titleEl.textContent;
     
     return {
         anime_title: animeTitleEl ? animeTitleEl.textContent.trim() : "",
-        episode_title: SITE.parseEpisodeTitle(titleEl.textContent),
+        episode_title: (titleEl && SITE.parseEpisodeTitle) ? SITE.parseEpisodeTitle(titleEl.textContent) : "",
         episode: SITE.parseEpisodeNumber ? SITE.parseEpisodeNumber(rawEpisodeValue) : rawEpisodeValue ? rawEpisodeValue.trim() : "",     // in 'else' another if-else: number element not working
         current_time: currentTime,
         duration: duration,
-        cover: getCoverUrl(coverEl),
+        cover: SITE.parseCoverUrl ? SITE.parseCoverUrl(getCoverUrl(coverEl)) : getCoverUrl(coverEl),
         paused: isPaused,
     };
 }

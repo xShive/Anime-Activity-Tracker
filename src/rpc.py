@@ -95,7 +95,7 @@ def watching():
         mal_url = get_mal_url(anime_title)
 
         # Is the video finished?
-        if seconds_remaining <= 0 and duration != "0:00":
+        if seconds_remaining <= 0 and duration not in ("", "0:00"):
             if current_end_timestamp is not None:
                 current_end_timestamp = None
                 rpc.clear()     # erase countdown, only first time when 0 remaining
@@ -132,7 +132,7 @@ def watching():
 
             rpc.update(
                 details=anime_title_and_number,
-                state=episode_title,
+                state=episode_title if episode_title else None,
                 large_image=cover,
                 end=current_end_timestamp,
                 buttons=[{"label": "View on MAL", "url": mal_url}]

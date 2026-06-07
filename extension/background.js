@@ -5,7 +5,8 @@ const SUPPORTED_HOSTS = [
     "miruro.bz",
     "crunchyroll.com",
     "miruro.to",
-    "miruro.ru"
+    "miruro.ru",
+    "animepahe.pw"
 ];
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
@@ -26,7 +27,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 // ========== Background fetches (to avoid local network popup) ==========
 // listen to messages coming from content scripts
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {      // message is the object from content.js, other two are auto added
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {      // message is the object from content.js, other two are auto added
     // check if it is a fetch request (content.js)
     if (message.type === "fetch") {
         // hit API
@@ -41,4 +42,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {      
 
         return true;
     }
+
+    // check if we have received kwik video data. forward it to content.js
+    if (message.type === "video_data") {
+    chrome.tabs.sendMessage(sender.tab.id, message);
+    return;
+}
 });
