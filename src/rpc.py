@@ -133,7 +133,7 @@ def watching():
                 current_end_timestamp = new_end_timestamp
 
             rpc.update(
-                activity_type=ActivityType.LISTENING,
+                activity_type=ActivityType.WATCHING,
                 details=anime_title_and_number,
                 state=episode_title if episode_title else None,
                 large_image=cover,

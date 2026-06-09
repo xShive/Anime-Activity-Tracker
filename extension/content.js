@@ -89,7 +89,7 @@ function scrapeData() {
         isPaused = true;
     }
     // if number element exists, use it. else, full title and extract number from it in the return parseEpisodeNumber
-    const rawEpisodeValue = numberEl ? numberEl.textContent : titleEl.textContent;
+    const rawEpisodeValue = numberEl ? numberEl.textContent : (titleEl ? titleEl.textContent : "");
     
     return {
         anime_title: animeTitleEl ? animeTitleEl.textContent.trim() : "",
