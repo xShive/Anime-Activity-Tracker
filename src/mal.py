@@ -1,5 +1,10 @@
 # ========== Imports ==========
 import requests
+import logging
+
+# ========== Logging ==========
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 # Store MAL links to prevent spamming the API lol
 mal_url_cache = {} 
@@ -34,7 +39,7 @@ def get_mal_url(title: str) -> str:
             return mal_url
 
     except Exception as e:
-        print(f"Failed to fetch MAL link: {e}")
+        logger.error(f"Failed to fetch MAL link: {e}")
 
     fallback_url = f"https://myanimelist.net/anime.php?q={title}"
     mal_url_cache[title] = fallback_url

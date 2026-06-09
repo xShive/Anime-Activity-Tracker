@@ -1,6 +1,12 @@
 # ========== Imports ==========
 import requests
+import logging
+
 from typing import Optional, Tuple
+
+# ========== Logging ==========
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 # ========== Global variables ==========
 CURRENT_VERSION = "v1.3.3"
@@ -38,6 +44,6 @@ def check_for_updates() -> Tuple[Optional[str], Optional[str]]:
                 return latest_version, download_url
 
     except Exception as e:
-        print(f"Failed to check for updates: {e}")
+        logger.error(f"Failed to check for updates: {e}")
     
     return None, None
