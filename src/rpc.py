@@ -165,10 +165,7 @@ def stopped():
 @app.route('/update', methods=['GET'])
 def update():
     latest_version, download_url = check_for_updates()
-    if latest_version and download_url:
-        return jsonify({ "latest_version": latest_version, "download_url": download_url})
-    else:
-        return jsonify({ "status": "GitHub_API_failed"})
+    return jsonify({"latest_version": latest_version or None, "download_url": download_url or None})
 
 # ========== Main ==========
 if __name__ == '__main__':
