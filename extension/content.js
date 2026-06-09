@@ -107,7 +107,7 @@ function scrapeData() {
 // direct requests to localhost would trigger a browser security popup, so we route through the background worker
 function bgFetch(url, method, body = null) {
     return new Promise((resolve) => {
-        chrome.runtime.sendMessage({
+        chrome.runtime.sendMessage({        // send to background.js
             type: "fetch",
             url,
             method,

@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from tray import create_tray
 from mal import get_mal_url
+from updater import check_for_updates, CURRENT_VERSION
 
 import time
 import threading
@@ -161,6 +162,13 @@ def stopped():
     print("Presence cleared")
     return jsonify({ "status": "ok" })
 
+@app.route('/update', methods=['GET'])
+def update():
+    latest_version, download_url = check_for_updates()
+    if latest_version and download_url:
+        return jsonify({ "latest_version": latest_version, "download_url": download_url})
+    else:
+        return jsonify({ "status": "GitHub_API_failed"})
 
 # ========== Main ==========
 if __name__ == '__main__':

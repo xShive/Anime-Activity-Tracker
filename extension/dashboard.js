@@ -1,0 +1,15 @@
+const version = chrome.runtime.getManifest().version;
+document.getElementById("version").textContent = "v" + version;
+
+
+
+// fetch is async and returns a promise
+// that promise has a .then() method which takes the data and passes it to the function inside
+fetch("http://127.0.0.1:5001/update")
+    .then(function(response) {
+        return response.json()      // response.json() is async, returs a promise
+    })                              // another .then() is needed
+    .then(function(data) {
+        document.getElementById("latest_version").textContent = data["latest_version"];
+        document.getElementById("download_url").textContent = data["download_url"];
+    })
