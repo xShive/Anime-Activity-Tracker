@@ -35,6 +35,7 @@ def create_tray():
         pystray.MenuItem("Quit", lambda: icon.stop())
     )
 
+    # runs once
     def setup(icon):
         icon.visible = True
         threading.Thread(target=background_check, args=(icon,), daemon=True).start()
