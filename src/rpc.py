@@ -8,9 +8,15 @@ from mal import get_mal_url
 from updater import check_for_updates
 from helpers import time_to_seconds
 from functools import wraps
+from log_setup import setup_logging
 
 import time
 import threading
+import logging
+
+# ========== Logging ==========
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 # ========== Global Variables ==========
 APP_ID="1510673753871352070"
@@ -37,14 +43,14 @@ def timeout_monitor():
         
         # if active, but no signal from the browser in 25 seconds
         if is_presence_active and (time.time() - last_ping_time > 25):
-            print("Browser tab closed! Clearing Discord presence.")
+            logger.info("Browser tab closed! Clearing Discord presence.")
             try:
                 if rpc_connected:   # check if youre not disconnected
                     rpc.clear()
 
             except Exception as e:
                 rpc_connected = False
-                print(f"ERROR: {e}")
+                logger.error(f"Discord's RPC socket failed: {e}.\nA reconnect attempt will trigger shortly.")
 
             is_presence_active = False
 
@@ -71,16 +77,17 @@ def watching():
     last_ping_time = time.time() # reset timer
     is_presence_active = True
 
+    # reconnect rpc if needed
     if not rpc_connected:
         try:
             rpc = Presence(APP_ID)
             rpc.connect()
             rpc_connected = True
             current_end_timestamp = None
-            print("Successfully reconnected.")
+            logger.info("Successfully reconnected to Discord's RPC socket.")
             
         except Exception as e:
-            print(f"Reconnect failed: {e}")
+            logger.error(f"Failed reconnecting to Discord's RPC socket: {e}")
 
     data = request.get_json()
 
@@ -158,7 +165,7 @@ def watching():
 
     except Exception as e:
         rpc_connected = False
-        print(f"Discord's RPC socket failed: {e}.\nA reconnect attempt will trigger shortly.")
+        logger.error(f"Discord's RPC socket failed: {e}.\nA reconnect attempt will trigger shortly.")
 
     return jsonify({ "status": "ok" })
 
@@ -167,8 +174,10 @@ def stopped():
     global is_presence_active, current_end_timestamp, last_episode, current_title_and_number
     try:
         rpc.clear()
-    except:
-        pass
+
+    except Exception as e:
+        logger.error(f"Discord's RPC socket failed: {e} Couldn't clear status.")
+
     is_presence_active = False
     current_end_timestamp = None
     last_episode = None
@@ -192,26 +201,29 @@ def toggle_ghost():
     if ghost_mode:
         try:
             rpc.clear()
-        except:
-            pass
+        except Exception as e:
+            logger.error(f"Discord's RPC socket failed: {e} Couldn't clear status.")
+            
     return jsonify({ "ghost_mode": ghost_mode })
 
 # ========== Main ==========
 if __name__ == '__main__':
+    setup_logging()
+
     # Connect RPC
     try:
         rpc = Presence(APP_ID)
         rpc.connect()
         rpc_connected = True
-        print("Successfully connected to Discord's RPC")
+        logger.info("Successfully connected to Discord's RPC")
         
     except Exception as e:
-        print(f"Initial Discord connection failed: {e}. Will retry on next browser update.")
+        logger.error(f"Initial Discord connection failed: {e}. Will retry on next browser update.")
         rpc_connected = False
 
     # thread 1: flask server listens for HTTP requests on port 5001 (daemon)
-    threading.Thread(target=lambda: app.run(host='127.0.0.1', port=5001), daemon=True).start() 
-    print("RPC client running on port 5001...")
+    threading.Thread(target=lambda: app.run(host='127.0.0.1', port=5001), daemon=True).start()
+    logger.info("RPC client running on port 5001...") 
 
     # thread 2: check heartbeat every 5 seconds (daemon)
     threading.Thread(target=timeout_monitor, daemon=True).start()
