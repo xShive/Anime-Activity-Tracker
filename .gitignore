@@ -3,6 +3,5 @@
 build/
 dist/
 Output/
-*.spec
-installer.iss
 src/__pycache__/
+ROADMAP.md

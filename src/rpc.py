@@ -5,7 +5,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from tray import create_tray
 from mal import get_mal_url
-from updater import check_for_updates, CURRENT_VERSION
+from updater import check_for_updates
+from functools import wraps
 
 import time
 import threading
@@ -52,7 +53,9 @@ def time_to_seconds(t: str) -> int:
     return int(parts[0]) * 60 + int(parts[1]) if (len(parts) == 2) else int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
 
 # ========== Decorator ==========
+# if two endpoints use the decorator, both endpoints will be named wrapper (prevent)
 def not_ghost(func):
+    @wraps(func)
     def wrapper():
         if ghost_mode:
             return jsonify({ "status": "ghost_mode" })
@@ -191,7 +194,10 @@ def toggle_ghost():
     global ghost_mode
     ghost_mode = not ghost_mode
     if ghost_mode:
-        rpc.clear()
+        try:
+            rpc.clear()
+        except:
+            pass
     return jsonify({ "ghost_mode": ghost_mode })
 
 # ========== Main ==========
