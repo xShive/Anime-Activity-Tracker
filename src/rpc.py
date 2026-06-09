@@ -20,6 +20,8 @@ rpc_connected = False
 current_end_timestamp = None
 last_episode = None
 
+current_title_and_number = None
+
 # ========== Heartbeat Timeout Logic =========
 def timeout_monitor():
     """
@@ -54,7 +56,7 @@ CORS(app)
 
 @app.route('/watching', methods=['POST'])
 def watching():
-    global last_ping_time, is_presence_active, is_paused_active, rpc_connected, rpc
+    global last_ping_time, is_presence_active, is_paused_active, rpc_connected, rpc, current_title_and_number
     global current_end_timestamp, last_episode
 
     last_ping_time = time.time() # reset timer
@@ -132,6 +134,8 @@ def watching():
             
             if current_end_timestamp is None or episode_changed or abs(current_end_timestamp - new_end_timestamp) > 3:
                 current_end_timestamp = new_end_timestamp
+            
+            current_title_and_number = anime_title_and_number
 
             rpc.update(
                 activity_type=ActivityType.WATCHING,
@@ -151,7 +155,7 @@ def watching():
 
 @app.route('/stopped', methods=['POST'])
 def stopped():
-    global is_presence_active, current_end_timestamp, last_episode
+    global is_presence_active, current_end_timestamp, last_episode, current_title_and_number
     try:
         rpc.clear()
     except:
@@ -159,6 +163,7 @@ def stopped():
     is_presence_active = False
     current_end_timestamp = None
     last_episode = None
+    current_title_and_number = None
     print("Presence cleared")
     return jsonify({ "status": "ok" })
 
@@ -166,6 +171,10 @@ def stopped():
 def update():
     latest_version, download_url = check_for_updates()
     return jsonify({"latest_version": latest_version or None, "download_url": download_url or None})
+
+@app.route('/status', methods=['GET'])
+def status():
+    return jsonify({"title_number": current_title_and_number or None, "is_watching": is_presence_active, "is_paused": is_paused_active})
 
 # ========== Main ==========
 if __name__ == '__main__':
