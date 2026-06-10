@@ -209,27 +209,23 @@ def toggle_ghost():
 
 @app.route("/mal/login", methods=["GET"])   # 'login' button in extension hits this
 def mal_login():
-    if start_login():
-        return jsonify({"status": "opening browser"})
-    return jsonify({"status": "error"}), 500
+    start_login()
+    return jsonify({"status": "opening browser"})
 
 @app.route("/mal/callback", methods=['GET'])    # when login works, it hits this
 def mal_callback():
     code = request.args.get("code")
-    if code is None:                            # MAL hit us with no code -> nothing to trade
+    if code is None:
         logger.error("MAL callback was hit without a code")
-        return "Login failed: no code received.", 400
+        return "Login failed: no code received."
 
     if handle_callback(code):
         return "Connected! You can close this tab."
-    return "Login failed. Please try again.", 500
+    return "Login failed. Please try again."
 
 @app.route("/mal/me", methods=['GET'])      # the extension should hit this when loading profile data
 def mal_me():
-    info = get_my_info()
-    if info is None:                            # not logged in, or the request failed
-        return jsonify({"error": "not logged in"}), 401
-    return jsonify(info)
+    return jsonify(get_my_info())
 
 # ========== Main ==========
 if __name__ == '__main__':
