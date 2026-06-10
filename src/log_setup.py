@@ -1,12 +1,17 @@
 # ========== Imports ==========
 import logging
+import os
 from logging.handlers import RotatingFileHandler
+from paths import app_data_dir
 
 def setup_logging():
-    logging.basicConfig(    
+    log_location = os.path.join(app_data_dir(), "anipresence.log")
+
+    logging.basicConfig(
+        level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
         handlers=[
             logging.StreamHandler(),
-            RotatingFileHandler("anipresence.log",)
+            RotatingFileHandler(log_location)
         ]
     )
