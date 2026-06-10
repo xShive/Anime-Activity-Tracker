@@ -9,7 +9,7 @@ from updater import check_for_updates
 from helpers import time_to_seconds
 from functools import wraps
 from log_setup import setup_logging
-from mal_auth import start_login, handle_callback, get_my_info
+from mal_auth import start_login, handle_callback, get_my_info, logout
 
 import time
 import threading
@@ -211,6 +211,11 @@ def toggle_ghost():
 def mal_login():
     start_login()
     return jsonify({"status": "opening browser"})
+
+@app.route("/mal/logout", methods=["POST"])
+def mal_logout():
+    logout()
+    return jsonify({"status": "disconnected"})
 
 @app.route("/mal/callback", methods=['GET'])    # when login works, it hits this
 def mal_callback():
