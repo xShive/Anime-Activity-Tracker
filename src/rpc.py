@@ -9,6 +9,7 @@ from updater import check_for_updates
 from helpers import time_to_seconds
 from functools import wraps
 from log_setup import setup_logging
+from mal_auth import start_login, handle_callback, get_my_info
 
 import time
 import threading
@@ -205,6 +206,30 @@ def toggle_ghost():
             logger.error(f"Discord's RPC socket failed: {e} Couldn't clear status.")
             
     return jsonify({ "ghost_mode": ghost_mode })
+
+@app.route("/mal/login", methods=["GET"])   # 'login' button in extension hits this
+def mal_login():
+    if start_login():
+        return jsonify({"status": "opening browser"})
+    return jsonify({"status": "error"}), 500
+
+@app.route("/mal/callback", methods=['GET'])    # when login works, it hits this
+def mal_callback():
+    code = request.args.get("code")
+    if code is None:                            # MAL hit us with no code -> nothing to trade
+        logger.error("MAL callback was hit without a code")
+        return "Login failed: no code received.", 400
+
+    if handle_callback(code):
+        return "Connected! You can close this tab."
+    return "Login failed. Please try again.", 500
+
+@app.route("/mal/me", methods=['GET'])      # the extension should hit this when loading profile data
+def mal_me():
+    info = get_my_info()
+    if info is None:                            # not logged in, or the request failed
+        return jsonify({"error": "not logged in"}), 401
+    return jsonify(info)
 
 # ========== Main ==========
 if __name__ == '__main__':
