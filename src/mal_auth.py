@@ -172,3 +172,51 @@ def get_animelist():
     except Exception as e:
         logger.error(f"Could not fetch MAL animelist: {e}")
         return None
+    
+
+def get_mangalist():
+    try:
+        tokens = get_token()
+        if not tokens:
+            return None
+
+        response = requests.get(
+            "https://api.myanimelist.net/v2/users/@me/mangalist",
+            headers={"Authorization": "Bearer " + tokens["access_token"]},
+            params={
+                "fields": "list_status,synopsis,rank,media_type,num_volumes,num_chapters,mean",
+                "limit": 1000,
+            },
+            timeout=10,
+        )
+        response.raise_for_status()
+
+        raw = response.json()
+        manga = []
+
+        for item in raw["data"]:
+            node   = item["node"]
+            status = item["list_status"] 
+
+            manga.append({
+                "id":           node.get("id"),
+                "title":        node.get("title"),
+                "cover":        node.get("main_picture", {}).get("medium"),
+                "synopsis":     node.get("synopsis"),
+                "rank":         node.get("rank"),
+                "mean":         node.get("mean"),
+                "media_type":   node.get("media_type"),
+                "num_volumes":  node.get("num_volumes"),
+                "num_chapters": node.get("num_chapters"),
+
+                "status":       status.get("status"),
+                "score":        status.get("score"),
+                "volumes_read": status.get("num_volumes_read"),
+                "chapters_read":status.get("num_chapters_read")    
+            })
+
+        return manga
+    
+    except Exception as e:
+        logger.error(f"Could not fetch MAL mangalist: {e}")
+        return None

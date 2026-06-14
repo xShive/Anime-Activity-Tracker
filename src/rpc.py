@@ -9,7 +9,7 @@ from updater import check_for_updates
 from helpers import time_to_seconds
 from functools import wraps
 from log_setup import setup_logging
-from mal_auth import start_login, handle_callback, get_my_info, logout, get_animelist
+from mal_auth import start_login, handle_callback, get_my_info, logout, get_animelist, get_mangalist
 
 import time
 import threading
@@ -235,6 +235,10 @@ def mal_me():
 @app.route("/mal/me/animelist")
 def mal_animelist():
     return jsonify(get_animelist())
+
+@app.route("/mal/me/mangalist")
+def mal_mangalist():
+    return jsonify(get_mangalist())
 
 # ========== Main ==========
 if __name__ == '__main__':
